@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.jbeam": "jsonc",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
+    }
+}

@@ -1,0 +1,12 @@
+.pio
+.vscode
+
+configurations
+
+midi.lisp
+mp3*.lisp
+tc.lisp
+
+mp3*.qml
+
+util.js

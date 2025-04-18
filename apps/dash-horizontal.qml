@@ -52,12 +52,12 @@ Item {
         anchors.fill: parent
         color: {color = Utility.getAppHexColor("darkBackground")}
     }
-    
+
     Rectangle {
         anchors.fill: parent
         color: "transparent"
         visible: isHorizontal
-        
+
         Rectangle {
             id: topBar
             color: "transparent"
@@ -92,7 +92,7 @@ Item {
 
             Rectangle {
                 anchors.bottom: parent.bottom
-                width: parent.width 
+                width: parent.width
                 height: 2
                 color: "white"
                 opacity: 0.2
@@ -196,7 +196,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -265,7 +265,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -315,7 +315,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -333,7 +333,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         Rectangle {
                             radius: 5
                             width: parent.width
@@ -342,7 +342,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -360,7 +360,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -410,7 +410,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -428,7 +428,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -478,7 +478,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -496,7 +496,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -546,7 +546,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -564,7 +564,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -614,7 +614,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -632,7 +632,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -682,7 +682,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -700,7 +700,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -750,7 +750,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("lightText")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -768,7 +768,7 @@ Item {
                         radius: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        
+
                         RowLayout {
                             anchors.fill: parent
                             spacing: 5
@@ -809,7 +809,7 @@ Item {
                                 Layout.fillHeight: true
                             }
                         }
-                        
+
                         Rectangle {
                             radius: 5
                             width: parent.width
@@ -818,7 +818,7 @@ Item {
                             anchors.topMargin: 5
                             color: Utility.getAppHexColor("red")
                         }
-                        
+
                         Text {
                             anchors.topMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -864,6 +864,17 @@ Item {
                 text: "km/h"
                 font.family: "Exan"
                 color: {color = Utility.getAppHexColor("lightText")}
+
+                Text {
+                    id: speedGnss
+                    anchors.left: speedUnit.left
+                    anchors.bottom: speedUnit.top
+                    font.pixelSize: 30
+                    font.weight: Font.DemiBold
+                    text: "(24)"
+                    font.family: "Exan"
+                    color: {color = Utility.getAppHexColor("lightText")}
+               }
             }
             Text {
                 id: gear
@@ -895,7 +906,7 @@ Item {
                     font.family: "Exan"
                     color: {color = Utility.getAppHexColor("lightText")}
                 }
-                
+
                 Text {
                     id: fuelELabel
                     anchors.left: parent.left
@@ -917,7 +928,7 @@ Item {
                     font.family: "Exan"
                     color: {color = Utility.getAppHexColor("lightText")}
                 }
-                
+
                 Rectangle {
                     width: 2
                     anchors.leftMargin: 2
@@ -1331,7 +1342,7 @@ Item {
 
                 Rectangle {
                     anchors.bottom: parent.bottom
-                    width: parent.width 
+                    width: parent.width
                     height: 2
                     color: "white"
                     opacity: 0.2
@@ -1362,7 +1373,7 @@ Item {
                     source: {source = "qrc" + Utility.getThemePath() + "icons/v_icon-96.png"}
                     anchors.rightMargin: 5;
                 }
-                
+
                 Text {
                     id: odoText
                     anchors.top: parent.bottom
@@ -1406,7 +1417,7 @@ Item {
             color: {color = Utility.getAppHexColor("lightText")}
         }
     }
-    
+
     Rectangle {
         id: widthHeightRect
         visible: !isHorizontal || showWidthHeight
@@ -1419,7 +1430,7 @@ Item {
             anchors.centerIn: parent
             font.pixelSize: 40
             font.weight: Font.Bold
-            text: rtData.width + " x " + rtData.height 
+            text: rtData.width + " x " + rtData.height
             font.family: "Exan"
             color: {color = Utility.getAppHexColor("lightText")}
         }
@@ -1428,10 +1439,16 @@ Item {
     Timer {
         running: true
         repeat: true
-        interval: 50
+        interval: 100
 
         onTriggered: {
             mCommands.getValues()
+            mCommands.getValuesSetup()
+//            mCommands.bmsGetValues()
+//            mCommands.ioBoardGetAll(255)
+//            mCommands.getStats(0xFFFFFFFF)
+            mCommands.getGnss(0xFFFF)
+//            mCommands.getImuData(0xFFFFFFFF)
         }
     }
 
@@ -1458,7 +1475,7 @@ Item {
         }
 
         property var idMap: ({
-            amp1: amp1, amp1_1: amp1_1, amp1_2: amp1_2, amp1_3: amp1_3, amp1_4: amp1_4, amp1_5: amp1_5, 
+            amp1: amp1, amp1_1: amp1_1, amp1_2: amp1_2, amp1_3: amp1_3, amp1_4: amp1_4, amp1_5: amp1_5,
             amp2: amp2, amp2_1: amp2_1, amp2_2: amp2_2, amp2_3: amp2_3, amp2_4: amp2_4, amp2_5: amp2_5,
             amp3: amp3, amp3_1: amp3_1, amp3_2: amp3_2, amp3_3: amp3_3, amp3_4: amp3_4, amp3_5: amp3_5,
             amp4: amp4,
@@ -1570,11 +1587,6 @@ Item {
             }
 
             fuelLabel.text =  parseFloat(values.battery_level * 100.0).toFixed(0)
-            /*batCurrentGauge.value = values.current_in
-            currentGauge.value = values.current_motor
-            dutyGauge.value = values.duty_now * 100.0
-            batteryGauge.value = values.battery_level * 100.0
-            voltageGauge.value = values.v_in*/
 
             const now = (new Date());
             let mins = now.getMinutes();
@@ -1588,10 +1600,6 @@ Item {
 
             var useImperial = VescIf.useImperialUnits()
             var fl = mMcConf.getParamDouble("foc_motor_flux_linkage")
-            var rpmMax = (values.v_in * 60.0) / (Math.sqrt(3.0) * 2.0 * Math.PI * fl)
-            var speedFact = ((mMcConf.getParamInt("si_motor_poles") / 2.0) * 60.0 *
-                             mMcConf.getParamDouble("si_gear_ratio")) /
-                             (mMcConf.getParamDouble("si_wheel_diameter") * Math.PI)
             var impFact = useImperial ? 0.621371192 : 1.0
 
             var dist = values.tachometer_abs / 1000.0
@@ -1711,5 +1719,11 @@ Item {
             }
         }
         // (send-data (list off lock speedmode light unlock))
+
+        function onGnssRx(values, mask) {
+            var useImperial = VescIf.useImperialUnits()
+            var impFact = useImperial ? 0.621371192 : 1.0
+            speedGnss.text = "(" + Math.round(values.speed * 3.6 * impFact) + ")"
+        }
     }
 }

@@ -2,10 +2,12 @@
 ; UART Wiring: red=5V black=GND yellow=COM-TX (UART-HDX) green=COM-RX (button)+3.3V with 1K Resistor
 ; Guide (German): https://rollerplausch.com/threads/vesc-controller-einbau-1s-pro2-g30.6032/
 
-; TODO: Implement FWK by speed, above 36km/h increase current by 1A
 ; edited by ddev
 
 ; -> User parameters (change these to your needs)
+(def taillight-enabled 1) ; taillight stuff on swdio pin
+(def custom-commands-enabled 1) ; custom commands from vesc tool
+
 (def software-adc 0)
 (def min-adc-throttle 0.1)
 (def min-adc-brake 0.1)
@@ -41,18 +43,18 @@
 
 ; Secret speed modes. To enable, press the button 2 times while holding break and throttle at the same time.
 (def secret-enabled 1)
-(def secret-eco-speed (/ 50 3.6))
+(def secret-eco-speed (/ 5 3.6))
 (def secret-eco-current 1.0)
-(def secret-eco-watts 20000)
-(def secret-eco-fw 5)
-(def secret-drive-speed (/ 1000 3.6))
+(def secret-eco-watts 300)
+(def secret-eco-fw 0)
+(def secret-drive-speed (/ 100 3.6))
 (def secret-drive-current 1.0)
 (def secret-drive-watts 1500000)
-(def secret-drive-fw 20) ; the same as sport but sport has adaptive fwk
-(def secret-sport-speed (/ 70 3.6)) ; 1000 km/h easy
+(def secret-drive-fw 10)
+(def secret-sport-speed (/ 100 3.6)) ; 1000 km/h easy
 (def secret-sport-current 1.0)
 (def secret-sport-watts 1500000)
-(def secret-sport-fw 30) ; adaptive, doesn't really matter above 35 kmh
+(def secret-sport-fw 15)
 
 ; -> Code starts here (DO NOT CHANGE ANYTHING BELOW THIS LINE IF YOU DON'T KNOW WHAT YOU ARE DOING)
 
@@ -144,25 +146,25 @@
 
         ; secret sport mode fwk to the metal above 25kmh - 30kmh
         ; disabled
-        (if (= unlock 2)
-            {
-                (var speed (* (l-speed) 3.6))
-                (if (and (> speed 25) (= speedmode 4)) ; speed higher than -32kmh- 25 and in sportmode (might save some clock cycles)
-                    {
-                        (var current (get-current-in))
-                        (var difference (- battery-current-max current)) ; so if we are drawing 26 amps that will be 30 - 26 = 4 amps
-                        (var multiplier (if (< speed 25)
-                                0
-                            (if (> speed 30)
-                                1
-                            (/ (- speed 25) 4)))) ; smoothing multiplier so its not a on/off switch or kick (could trigger OCP (?))
-                        (set-param 'foc-fw-current-max (+ 5 (* (- difference 1) multiplier))) ; keep 1 amps of room
-                        ;(print (str-merge (str-from-n (conf-get 'foc-fw-current-max)) " " (str-from-n difference) " " (str-from-n multiplier) " " (str-from-n (* (- difference 1) multiplier))))
-                    }
-                    (apply-mode) ; if speed is below -32kmh- 25kmh let it apply it manually (might be slow)
-                )
-            }
-        )
+        ;(if (= unlock 2)
+        ;    {
+        ;        (var speed (* (l-speed) 3.6))
+        ;        (if (and (> speed 25) (= speedmode 4)) ; speed higher than -32kmh- 25 and in sportmode (might save some clock cycles)
+        ;            {
+        ;                (var current (get-current-in))
+        ;                (var difference (- battery-current-max current)) ; so if we are drawing 26 amps that will be 30 - 26 = 4 amps
+        ;                (var multiplier (if (< speed 25)
+        ;                        0
+        ;                    (if (> speed 30)
+        ;                        1
+        ;                    (/ (- speed 25) 4)))) ; smoothing multiplier so its not a on/off switch or kick (could trigger OCP (?))
+        ;                (set-param 'foc-fw-current-max (+ 5 (* (- difference 1) multiplier))) ; keep 1 amps of room
+        ;                ;(print (str-merge (str-from-n (conf-get 'foc-fw-current-max)) " " (str-from-n difference) " " (str-from-n multiplier) " " (str-from-n (* (- difference 1) multiplier))))
+        ;            }
+        ;            (apply-mode) ; if speed is below -32kmh- 25kmh let it apply it manually (might be slow)
+        ;        )
+        ;    }
+        ;)
     }
 )
 
@@ -470,7 +472,112 @@
     (loopwhile t
         {
             (send-data (list off lock speedmode light unlock))
+            ;(var arr (array-create 12))
+            ;(bufset-f32 arr 0 (* (l-speed) 3.6))
+            ;(bufset-f32 arr 4 (get-adc-decoded 0))
+            ;(bufset-f32 arr 8 (get-adc-decoded 1))
+
+            ;(send-data arr)
             (sleep 1)
+        }
+    )
+)
+
+(defun drive-pwm(frequency duty-cycle gpio-pin)
+    {
+        (var period (/ 1.0 frequency))
+        (var on-time (* duty-cycle period))
+        (var off-time (- period on-time))
+
+        (gpio-write gpio-pin 1)
+        (sleep on-time)
+
+        (gpio-write gpio-pin 0)
+        (sleep off-time)
+    }
+)
+
+(defun handle-brake()
+    {
+        (var taillighton 0)
+        (var frequency 100)
+        (var period (/ 1.0 frequency))
+        (var headlightDuty 0.25)
+        (var normalDuty 1.0)
+
+        (var pin 'pin-swdio)
+
+        (gpio-configure pin 'pin-mode-out)
+
+        (loopwhile t
+            {
+                (if (> (get-adc-decoded 1) 0.025)
+                    (set 'taillighton 1)
+                    (set 'taillighton 0)
+                )
+
+                (if (= light 0)
+                    (if (= taillighton 0)
+                        {
+                            (gpio-write pin 0)
+                            (sleep period)
+                        }
+                        {
+                            (drive-pwm frequency normalDuty pin)
+                        }
+                    )
+                    (if (= taillighton 0)
+                        (drive-pwm frequency headlightDuty pin)
+                        (drive-pwm frequency normalDuty pin)
+                    )
+                )
+            }
+        )
+    }
+)
+
+(defun do-shutdown()
+    {
+        (gpio-configure 'pin-swclk 'pin-mode-out)
+        (sleep 0.25)
+        (set 'feedback 2)
+
+        (sleep 2)
+        (gpio-write 'pin-swclk 1)
+        (sleep 2)
+        (gpio-write 'pin-swclk 0)
+    }
+)
+
+(defun handle-custom-commands()
+    (loopwhile t
+        {
+            (var data (recv-data))
+
+            (if (= (bufget-u8 data 0) 0xDD)
+                {
+                    (var command (bufget-u8 data 1))
+
+                    (if (= command 0x01) ; 0xDD01
+                        (do-shutdown)
+                    )
+                    (if (= command 0x02) ; 0xDD02 secret toggle command
+                        {
+                            (set 'unlock (bitwise-xor unlock 1))
+                            (set 'feedback 2) ; beep 2x
+                            (apply-mode)
+                        }
+                    )
+                    (if (= command 0x03) ; 0xDD03 lock toggle command
+                        {
+                            (set 'unlock 0)
+                            (apply-mode)
+                            (set 'lock (bitwise-xor lock 1)) ; lock on or off
+                            (set 'feedback 1) ; beep feedback
+                        }
+                    )
+                }
+            )
         }
     )
 )
@@ -481,4 +588,13 @@
 ; Spawn UART reading frames thread
 (spawn 150 read-frames)
 (spawn 50 send-params)
+
+(if (= taillight-enabled 1)
+    (spawn 50 handle-brake)
+)
+
+(if (= custom-commands-enabled 1)
+    (spawn 100 handle-custom-commands)
+)
+
 (button-logic) ; Start button logic in main thread - this will block the main thread

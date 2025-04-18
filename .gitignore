@@ -2,11 +2,14 @@
 .vscode
 
 configurations
+esp32-vesc-hub
 
 midi.lisp
 mp3*.lisp
 tc.lisp
+m365_dash.lisp
 
 mp3*.qml
+es.qml
 
 util.js

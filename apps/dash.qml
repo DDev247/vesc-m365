@@ -180,15 +180,37 @@ Item {
                         unitText: VescIf.useImperialUnits() ? "mph" : "km/h"
                         typeText: "Speed"
 
-                        Image {
+                        nibColor: Utility.getAppHexColor("lightAccent")
+                        Behavior on nibColor {
+                            ColorAnimation {
+                                duration: 2000;
+                                easing.type: Easing.InOutSine
+                                easing.overshoot: 3
+                            }
+                        }
+
+                        Button {
                             anchors.centerIn: parent
-                            antialiasing: true
-                            opacity: 0.4
-                            height: parent.height*0.05
-                            fillMode: Image.PreserveAspectFit
-                            source: {source = "qrc" + Utility.getThemePath() + "icons/vesc-96.png"}
-                            //anchors.horizontalCenterOffset: (gaugeSize)/3.25 + gaugeSize2/2
                             anchors.verticalCenterOffset: 0.7*(gaugeSize)/2
+                            height: parent.height*0.15
+                            width: parent.width*0.23
+
+                            background: Rectangle {
+                                opacity: 0
+                            }
+
+                            onClicked: {
+                                commandTimer.running = !commandTimer.running
+                            }
+                            contentItem: Image {
+                                height: parent.parent.height*0.05
+                                anchors.fill: parent
+                                antialiasing: true
+                                opacity: commandTimer.running ? 0.4 : 0.1
+                                fillMode: Image.PreserveAspectFit
+                                source: {source = "qrc" + Utility.getThemePath() + "icons/vesc-96.png"}
+                                //anchors.horizontalCenterOffset: (gaugeSize)/3.25 + gaugeSize2/2
+                            }
                         }
 
                         Text {
@@ -301,10 +323,19 @@ Item {
                     Layout.columnSpan: isHorizontal ? 2 : 1
 
                     Rectangle {
+                        id: borderRect
                         anchors.top: parent.top
                         width: parent.width
                         height: 2
                         color: Utility.getAppHexColor("lightAccent")
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 2000;
+                                easing.type: Easing.InOutSine
+                                easing.overshoot: 3
+                            }
+                        }
                     }
 
                     Text {
@@ -404,81 +435,71 @@ Item {
         } // Page.dashboardMainPage
 
         Page {
-            id: dashboardRtConfigPage
+            id: dashboardRtStateActionsPage
             ColumnLayout {
                 anchors.fill: parent
                 anchors.topMargin: 5
 
-                GridLayout {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    columns: isHorizontal ? 4 : 2
-                    Layout.leftMargin: 5
-                    Layout.rightMargin: 5
-                    Layout.topMargin: 5
-                    Layout.bottomMargin: 5
-                    CustomGauge {
-                        id: configFwkCurrentGauge
+                ColumnLayout {
+                    // Layout.fillWidth: true
+                    // Layout.fillHeight: true
+                    width: parent.width
+                    height: parent.height
+
+                    Text {
+                        id: statusText
+                        color: Utility.getAppHexColor("lightText")
+                        text: "Headlight: Off\nLocked: False\nMode: Sport\nSecret: On"
+                        horizontalAlignment: Text.AlignHCenter
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                        maximumValue: 30
-                        minimumValue: -30
-                        labelStep: 10
-                        precision: 1
-                        value: 0
-                        unitText: "A"
-                        typeText: "FWK Current"
-                        Layout.preferredWidth: gaugeSizeConfig
-                        Layout.preferredHeight: gaugeSizeConfig
+                        font.pointSize: 12
                     }
 
-                    CustomGauge {
-                        id: configSpeedGauge
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                        maximumValue: 40
-                        minimumValue: 0
-                        labelStep: 5
-                        precision: 1
-                        value: 0
-                        unitText: "km/h"
-                        typeText: "Speed"
-                        Layout.preferredWidth: gaugeSizeConfig
-                        Layout.preferredHeight: gaugeSizeConfig
+                    Rectangle {
+                        id: stateActionsBorder
+                        Layout.alignment: Qt.AlignHCenter
+                        width: 100
+                        height: 2
+                        color: Utility.getAppHexColor("lightAccent")
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 2000;
+                                easing.type: Easing.InOutSine
+                                easing.overshoot: 3
+                            }
+                        }
                     }
 
-                    CustomGauge {
-                        id: configCurrentGauge
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                        maximumValue: 50
-                        minimumValue: -30
-                        labelStep: 10
-                        precision: 1
-                        value: 0
-                        unitText: "A"
-                        typeText: "CURRENT"
-                        Layout.preferredWidth: gaugeSizeConfig
-                        Layout.preferredHeight: gaugeSizeConfig
+                    Button {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "SHUTDOWN"
+                        onClicked: function () {
+                            var dataTx = new ArrayBuffer(2)
+                            var dvTx = new DataView(dataTx)
+                            dvTx.setUint16(0, 0xDD01);
+                            mCommands.sendCustomAppData(dataTx)
+                        }
                     }
-
-                    CustomGauge {
-                        id: configBatteryCurrentGauge
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                        maximumValue: 30
-                        minimumValue: -10
-                        labelStep: 10
-                        precision: 1
-                        value: 0
-                        unitText: "A"
-                        typeText: "BAT. CURRENT"
-                        Layout.preferredWidth: gaugeSizeConfig
-                        Layout.preferredHeight: gaugeSizeConfig
+                    Button {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "TOGGLE SECRET"
+                        onClicked: function () {
+                            var dataTx = new ArrayBuffer(2)
+                            var dvTx = new DataView(dataTx)
+                            dvTx.setUint16(0, 0xDD02);
+                            mCommands.sendCustomAppData(dataTx)
+                        }
+                    }
+                    Button {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "TOGGLE LOCK"
+                        onClicked: function () {
+                            var dataTx = new ArrayBuffer(2)
+                            var dvTx = new DataView(dataTx)
+                            dvTx.setUint16(0, 0xDD03);
+                            mCommands.sendCustomAppData(dataTx)
+                        }
                     }
                 }
             } // ColumnLayout
@@ -486,12 +507,14 @@ Item {
     } // SwipeView
 
     Timer {
-        running: true
+        id: commandTimer
+        running: false
         repeat: true
-        interval: 50
+        interval: 100
 
         onTriggered: {
-            mCommands.getValues()
+            //mCommands.getValues()
+            mCommands.getValuesSetup()
         }
     }
 
@@ -499,7 +522,7 @@ Item {
         target: mMcConf
 
         function onUpdated() {
-            configFwkCurrentGauge.value = mMcConf.getParamDouble("foc-fw-current-max");
+            //configFwkCurrentGauge.value = mMcConf.getParamDouble("foc-fw-current-max");
             console.log("upd");
             console.log(mMcConf, mMcConf.getParamDouble("foc-fw-current-max"));
         }
@@ -510,9 +533,6 @@ Item {
         target: mCommands
 
         function onValuesSetupReceived(values, mask) {
-            //currentGauge.maximumValue = Math.ceil(mMcConf.getParamDouble("l_current_max") / 5) * 5 * values.num_vescs
-            //currentGauge.minimumValue = Math.ceil(mMcConf.getParamDouble("l_current_min") / 5) * 5 * values.num_vescs
-            //currentGauge.minimumValue = -currentGauge.maximumValue
             currentGauge.labelStep = Math.ceil(currentGauge.maximumValue / 20) * 5
 
             batCurrentGauge.value = values.current_in
@@ -537,7 +557,6 @@ Item {
 
             if (Math.abs(speedGauge.maximumValue - speedMaxRound) > 6.0) {
                 speedGauge.maximumValue = speedMaxRound
-                //speedGauge.minimumValue = -speedMaxRound
                 speedGauge.minimumValue = 0
             }
 
@@ -573,12 +592,30 @@ Item {
             valText2.text =
                 l1Txt + parseFloat((values.tachometer_abs * impFact) / 1000.0).toFixed(3) + "\n" +
                 l2Txt + parseFloat(wh_km_total / impFact).toFixed(1)
+        }
 
-            // configuration gauges
-            configFwkCurrentGauge.value = mMcConf.getParamDouble("foc-fw-current-max");
-            configSpeedGauge.value = values.speed * 3.6;
-            configCurrentGauge.value = values.current_motor;
-            configBatteryCurrentGauge.value = values.current_in;
+        function onCustomAppDataReceived(data) {
+            var dv = new DataView(data, 0);
+            const scooterOff = dv.getInt8(0) == 1;
+            const scooterLocked = dv.getInt8(1) == 1;
+            const speedMode = dv.getInt8(2);
+            const lightState = dv.getInt8(3) == 1;
+            const secret = dv.getInt8(4) == 1;
+
+            var modeStr = "";
+            switch(speedMode) {
+                case 1: modeStr = "Eco"; break;
+                case 2: modeStr = "Drive"; break;
+                case 4: modeStr = "Sport"; break;
+            }
+
+            const color = secret ? Utility.getAppHexColor("red") : Utility.getAppHexColor("lightAccent");
+            borderRect.color = color;
+            stateActionsBorder.color = color; 
+            speedGauge.nibColor = color;
+            speedGauge.update();
+
+            statusText.text = `Headlight: ${lightState ? "On":"Off"}\nLocked: ${scooterLocked ? "True":"False"}\nMode: ${modeStr}\nSecret: ${secret ? "On":"Off"}`;
         }
     }
 }

@@ -482,6 +482,12 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         text: "SHUTDOWN"
                         onClicked: function () {sendCustomCommandU16(0xDD01)}
+                        /*background: Rectangle {
+                            implicitWidth: 100
+                            implicitHeight: 35
+                            opacity: 1
+                            color: Utility.getAppHexColor("red")
+                        }*/
                     }
                     Button {
                         Layout.alignment: Qt.AlignHCenter

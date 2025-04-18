@@ -478,7 +478,7 @@
 (defun handle-brake()
     {
         (var taillighton 0)
-        (var frequency 100)
+        (var frequency 150)
         (var period (/ 1.0 frequency))
         (var headlightDuty 0.25)
         (var normalDuty 1.0)

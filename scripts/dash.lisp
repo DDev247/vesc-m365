@@ -143,28 +143,6 @@
                 )
             }
         )
-
-        ; secret sport mode fwk to the metal above 25kmh - 30kmh
-        ; disabled
-        ;(if (= unlock 2)
-        ;    {
-        ;        (var speed (* (l-speed) 3.6))
-        ;        (if (and (> speed 25) (= speedmode 4)) ; speed higher than -32kmh- 25 and in sportmode (might save some clock cycles)
-        ;            {
-        ;                (var current (get-current-in))
-        ;                (var difference (- battery-current-max current)) ; so if we are drawing 26 amps that will be 30 - 26 = 4 amps
-        ;                (var multiplier (if (< speed 25)
-        ;                        0
-        ;                    (if (> speed 30)
-        ;                        1
-        ;                    (/ (- speed 25) 4)))) ; smoothing multiplier so its not a on/off switch or kick (could trigger OCP (?))
-        ;                (set-param 'foc-fw-current-max (+ 5 (* (- difference 1) multiplier))) ; keep 1 amps of room
-        ;                ;(print (str-merge (str-from-n (conf-get 'foc-fw-current-max)) " " (str-from-n difference) " " (str-from-n multiplier) " " (str-from-n (* (- difference 1) multiplier))))
-        ;            }
-        ;            (apply-mode) ; if speed is below -32kmh- 25kmh let it apply it manually (might be slow)
-        ;        )
-        ;    }
-        ;)
     }
 )
 
@@ -575,6 +553,16 @@
                             (set 'lock (bitwise-xor lock 1)) ; lock on or off
                             (set 'feedback 1) ; beep feedback
                         }
+                    )
+                    (if (= command 0x04) ; 0xDD04 mode change command
+                        (cond
+                            ((= speedmode 1) (set 'speedmode 4))
+                            ((= speedmode 2) (set 'speedmode 1))
+                            ((= speedmode 4) (set 'speedmode 2))
+                        )
+                    )
+                    (if (= command 0x05) ; 0xDD05 light toggle command
+                        (set 'light (bitwise-xor light 1))
                     )
                 }
             )

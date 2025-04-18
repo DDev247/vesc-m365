@@ -47,6 +47,13 @@ Item {
                                      (height - valMetrics.height * 10) /
                                      (isHorizontal ? 1 : 2) - (isHorizontal ? 30 : 20))
 
+    function sendCustomCommandU16(command) {
+        var dataTx = new ArrayBuffer(2)
+        var dvTx = new DataView(dataTx)
+        dvTx.setUint16(0, command);
+        mCommands.sendCustomAppData(dataTx)
+    }
+
     Component.onCompleted: {
         mCommands.emitEmptySetupValues()
     }
@@ -474,32 +481,27 @@ Item {
                     Button {
                         Layout.alignment: Qt.AlignHCenter
                         text: "SHUTDOWN"
-                        onClicked: function () {
-                            var dataTx = new ArrayBuffer(2)
-                            var dvTx = new DataView(dataTx)
-                            dvTx.setUint16(0, 0xDD01);
-                            mCommands.sendCustomAppData(dataTx)
-                        }
+                        onClicked: function () {sendCustomCommandU16(0xDD01)}
                     }
                     Button {
                         Layout.alignment: Qt.AlignHCenter
                         text: "TOGGLE SECRET"
-                        onClicked: function () {
-                            var dataTx = new ArrayBuffer(2)
-                            var dvTx = new DataView(dataTx)
-                            dvTx.setUint16(0, 0xDD02);
-                            mCommands.sendCustomAppData(dataTx)
-                        }
+                        onClicked: function () {sendCustomCommandU16(0xDD02)}
                     }
                     Button {
                         Layout.alignment: Qt.AlignHCenter
                         text: "TOGGLE LOCK"
-                        onClicked: function () {
-                            var dataTx = new ArrayBuffer(2)
-                            var dvTx = new DataView(dataTx)
-                            dvTx.setUint16(0, 0xDD03);
-                            mCommands.sendCustomAppData(dataTx)
-                        }
+                        onClicked: function () {sendCustomCommandU16(0xDD03)}
+                    }
+                    Button {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "CHANGE MODE"
+                        onClicked: function () {sendCustomCommandU16(0xDD04)}
+                    }
+                    Button {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "TOGGLE LIGHT"
+                        onClicked: function () {sendCustomCommandU16(0xDD05)}
                     }
                 }
             } // ColumnLayout
@@ -604,8 +606,8 @@ Item {
 
             var modeStr = "";
             switch(speedMode) {
-                case 1: modeStr = "Eco"; break;
-                case 2: modeStr = "Drive"; break;
+                case 1: modeStr = "Drive"; break;
+                case 2: modeStr = "Eco"; break;
                 case 4: modeStr = "Sport"; break;
             }
 

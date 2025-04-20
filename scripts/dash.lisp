@@ -555,11 +555,14 @@
                         }
                     )
                     (if (= command 0x04) ; 0xDD04 mode change command
-                        (cond
-                            ((= speedmode 1) (set 'speedmode 4))
-                            ((= speedmode 2) (set 'speedmode 1))
-                            ((= speedmode 4) (set 'speedmode 2))
-                        )
+                        {
+                            (cond
+                                ((= speedmode 1) (set 'speedmode 4))
+                                ((= speedmode 2) (set 'speedmode 1))
+                                ((= speedmode 4) (set 'speedmode 2))
+                            )
+                            (apply-mode)
+                        }
                     )
                     (if (= command 0x05) ; 0xDD05 light toggle command
                         (set 'light (bitwise-xor light 1))

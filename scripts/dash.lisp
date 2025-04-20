@@ -43,9 +43,9 @@
 
 ; Secret speed modes. To enable, press the button 2 times while holding break and throttle at the same time.
 (def secret-enabled 1)
-(def secret-eco-speed (/ 5 3.6))
+(def secret-eco-speed (/ 100 3.6)) ; 5
 (def secret-eco-current 1.0)
-(def secret-eco-watts 300)
+(def secret-eco-watts 1500000) ; 300
 (def secret-eco-fw 0)
 (def secret-drive-speed (/ 100 3.6))
 (def secret-drive-current 1.0)
